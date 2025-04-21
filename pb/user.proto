@@ -1,0 +1,87 @@
+syntax = "proto3";
+package user;
+import "google/protobuf/timestamp.proto";
+
+option go_package = "Mairuida/user_service/pb"; // 指定Go包路径
+
+// 用户服务接口定义
+service UserService {
+    // 用户注册：输入注册信息，返回注册结果
+    rpc RegisterUser (RegisterRequest) returns (RegisterResponse);
+  
+    // 用户登录：输入用户名密码，返回登录 token
+    rpc LoginUser (LoginRequest) returns (LoginResponse);
+
+    // 获取用户信息：根据 user_id 返回详细信息
+    rpc GetUserInfo (UserIDRequest) returns (UserInfo);
+
+    // 更新用户地址簿：更新地址簿
+    rpc UpdateAddressBook (AddressBookUpdateRequest) returns (GenericResponse);
+}
+
+// 消息结构定义 
+// 注册请求
+message RegisterRequest {
+    string username = 1;//用户名
+    string password = 2;//密码
+    string email = 3;//邮箱
+    string phone = 4;//电话号码
+}
+
+// 注册响应
+message RegisterResponse {
+    bool success=1;//是否成功
+    string user_id = 2;//注册成功后分配的用户ID
+    string message = 3;//提示信息
+}
+
+// 登录请求
+message LoginRequest {
+    string username = 1;//用户名
+    string password = 2;//密码
+}
+
+// 登录响应（返回JWT）
+message LoginResponse {
+    string token = 1;// 返回JWT token，用于鉴权
+    string user_id = 2;//用户ID
+}
+
+// 查询用户信息请求
+message UserIDRequest {
+    string user_id = 1;//用户ID
+}
+
+// 用户信息(需存数据库)
+message UserInfo {
+    string user_id = 1;//用户ID
+    string username = 2;//用户名
+    string email = 3;//邮箱
+    string phone = 4;//电话号码
+    repeated Address addresses = 5;
+    bool is_vip = 6;//是否是VIP用户
+    string vipLevel = 7; // 会员等级
+    google.protobuf.Timestamp created_at = 8;
+}
+
+// 地址结构体(需存数据库)
+message Address {
+    string id = 1;//地址唯一ID（可用于编辑/删除）
+    string label = 2; // 自定义标签：家、公司等
+    string province = 3;//省
+    string city = 4;//市
+    string district = 5;//区
+    string detail = 6;//详细地址
+}
+
+// 地址簿更新请求
+message AddressBookUpdateRequest {
+    string user_id = 1;// 用户ID
+    repeated Address addresses = 2;// 新的地址簿（旧的都不要，整个替换）
+}
+
+// 通用响应（用于一些简单的操作反馈）
+message GenericResponse {
+    bool success = 1;// 是否成功
+    string message = 2;// 提示信息
+}
