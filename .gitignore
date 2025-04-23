@@ -1,0 +1,19 @@
+# Binaries
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+
+# Go vendor & build
+/vendor/
+*.test
+*.out
+
+# Editor settings
+.idea/
+.vscode/
+*.swp
+
+# Proto generated files (if you want to exclude .pb.go)
+# *.pb.go
