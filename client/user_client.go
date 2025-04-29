@@ -1,3 +1,4 @@
+//客户端测试程序
 package main
 
 import (
@@ -7,7 +8,7 @@ import (
 
 	"google.golang.org/grpc"
 
-	pb "Mairuida/user_service/pb"
+	pb "github.com/MrGaoRock666/Mairuida/user_service/pb"
 )
 
 func main() {
@@ -23,10 +24,10 @@ func main() {
 
 	// 1. 测试注册
 	regResp, err := client.RegisterUser(ctx, &pb.RegisterRequest{
-		Username: "gbl",
-		Password: "200510",
-		Email:    "2801787642@qq.com",
-		Phone:    "13919472452",
+		Username: "www",
+		Password: "200560",
+		Email:    "25599346666@qq.com",
+		Phone:    "13954682644",
 	})
 	if err != nil {
 		log.Println("注册失败:", err)
@@ -37,8 +38,8 @@ func main() {
 
 		// 2. 测试登录
 		loginResp, err := client.LoginUser(ctx, &pb.LoginRequest{
-			Username: "gbl",
-			Password: "200510",
+			Username: "www",
+			Password: "200560",
 		})
 		if err != nil {
 			log.Println("登录失败:", err)
@@ -61,12 +62,12 @@ func main() {
 				UserId: userId, // 使用注册时返回的 user_id
 				Addresses: []*pb.Address{
 					{
-						Id:       "1", // 注意这里是字符串类型
+						Id:       "15", // 注意这里是字符串类型
 						Label:    "家",
 						Province: "甘肃省",
 						City:     "兰州市",
 						District: "安宁区",
-						Detail:   "某小区1栋101",
+						Detail:   "兰州49中",
 					},
 				},
 			})

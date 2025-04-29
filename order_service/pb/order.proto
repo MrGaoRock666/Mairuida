@@ -1,0 +1,98 @@
+syntax = "proto3";
+package order;
+
+import "google/protobuf/timestamp.proto";
+option go_package = "Mairuida/order_service/pb;pb";// 指定Go包路径
+
+//订单服务接口定义
+service OrderService {
+    // 创建订单：接收订单请求，返回订单响应
+    rpc CreateOrder (CreateOrderRequest) returns (OrderResponse);
+
+    // 查询订单详情：根据订单号返回完整信息
+    rpc GetOrder (OrderIDRequest) returns (OrderInfo);
+
+    // 运费估算：根据距离、重量、体积计算费用
+    rpc EstimateCost (EstimateRequest) returns (EstimateResponse); 
+}
+
+
+// 订单状态，用枚举实现，需要存数据库
+// 订单状态必须存数据库，因为这是系统流转的核心字段
+enum OrderStatus {
+    UNKNOWN = 0;
+    CREATED = 1;
+    DISPATCHING = 2;
+    IN_TRANSIT = 3;
+    DELIVERED = 4;
+    CANCELLED = 5;
+}
+
+
+// 创建订单请求
+message CreateOrderRequest {
+    string user_id = 1;         // 下单用户
+    string sender_address_id = 2; // 发件人地址ID
+    string receiver_address_id = 3; // 收件人地址ID
+    string item_name = 4;       // 物品名称
+    double weight = 5;          // 重量（单位：kg）
+    double volume = 6;          // 体积（单位：立方米）
+    string logistics_company = 7; // 指定物流公司
+    google.protobuf.Timestamp preferred_delivery_time = 8;//用户期望送达的时间
+    bool is_urgent = 9;//是否立即配送
+}
+
+// 创建订单响应
+message OrderResponse {
+    string order_id = 1;// 系统生成的订单号
+    string message = 2;// 状态信息，如“创建成功”
+    google.protobuf.Timestamp created_at = 3;
+}
+
+// 获取订单请求--根据订单ID获取
+message OrderIDRequest {
+    string order_id = 1;// 订单ID
+}
+
+//订单信息，需存数据库
+message OrderInfo {
+    string order_id = 1;                          // 订单ID
+    string user_id = 2;                           // 用户ID
+    string sender_address = 3;                    // 发货地址
+    string receiver_address = 4;                  // 收货地址
+    string item_name = 5;                         // 物品名称
+    double weight = 6;                            // 重量
+    double volume = 7;                            // 体积
+    OrderStatus status = 8;                       // 订单状态，比如运输中，已送达
+    google.protobuf.Timestamp created_at = 9;     // 创建时间
+    string logistics_company = 10;                // 物流公司
+    google.protobuf.Timestamp preferred_delivery_time = 11; // 期望送达时间
+    bool is_urgent = 12;                          // 是否加急
+    google.protobuf.Timestamp updated_at = 13;    // 更新时间
+}
+
+
+// 运输方式枚举
+enum TransportMethod {
+    ROAD = 0;  // 公路运输
+    RAIL = 1;  // 铁路运输
+    SEA = 2;   // 海运
+    AIR = 3;   // 空运
+    LOW_ALTITUDE = 4;  // 低空运输
+}
+
+// 运费估算请求(根据前面商讨的，运费由距离，重量，体积三方面综合决定)
+message EstimateRequest {
+    double distance_km = 1;  // 距离（单位：km）
+    double weight = 2;       // 重量
+    double volume = 3;       // 体积
+    bool is_urgent = 4;      // 是否加急
+    bool is_delayed = 5;     // 用户是否选择延迟运输
+    TransportMethod transport_method = 6;  // 运输方式
+}
+
+// 运费估算响应
+message EstimateResponse {
+    double estimated_cost = 1;// 估算出的运输费用（单位：元）
+}
+

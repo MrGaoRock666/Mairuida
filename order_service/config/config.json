@@ -1,0 +1,16 @@
+{
+    "shipping": {
+        "basePrice": 10.0,
+        "pricePerKgPerKm": 2.0,
+        "volumeRate": 5000.0,
+        "urgentSurcharge": 1.5,
+        "delayDiscount": 0.8,
+        "transportRates": {
+            "ROAD": 1.0,
+            "RAIL": 0.3,
+            "SEA": 0.3,
+            "AIR": 410.0,
+            "LOW_ALTITUDE": 38.0
+        }
+    }
+}
