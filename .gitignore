@@ -1,9 +1,0 @@
-# 忽略 Go 编译文件
-bin/
-*.log
-*.pb.go
-*.pb.json
-*.pb.validate.go
-
-# 忽略配置和私密文件
-.env

@@ -2,7 +2,7 @@ syntax = "proto3";
 package user;
 import "google/protobuf/timestamp.proto";
 
-option go_package = "Mairuida/user_service/pb"; // 指定Go包路径
+option go_package = "Mairuida/user_service/pb;pb";// 指定Go包路径
 
 // 用户服务接口定义
 service UserService {
@@ -15,8 +15,25 @@ service UserService {
     // 获取用户信息：根据 user_id 返回详细信息
     rpc GetUserInfo (UserIDRequest) returns (UserInfo);
 
-    // 更新用户地址簿：更新地址簿
+    // 更新用户地址簿：发送更新地址簿请求，返回通用响应
     rpc UpdateAddressBook (AddressBookUpdateRequest) returns (GenericResponse);
+
+    // 发送登录验证码：发送验证码请求，返回通用响应
+    rpc SendLoginCode(LoginCodeRequest) returns (GenericResponse);
+
+    // 使用验证码登录：响应复用已有 LoginResponse
+    rpc LoginByCode(LoginByCodeRequest) returns (LoginResponse);
+
+    // 注销账号：发送查询用户信息请求，返回通用响应，这里用的是软删除机制
+    // 即不清空数据库的记录被查，仅使用bool逻辑，让软删除的账户无法查询，更新数据库
+    rpc DeleteUserAccount(UserIDRequest) returns (GenericResponse);
+
+    // 恢复已注销的账号：发送恢复用户请求，返回通用响应
+    rpc RestoreUserAccount(UserRestoreRequest) returns (GenericResponse);
+
+    //jwt拦截器测试接口
+    rpc GetUserIDByJWT(Empty) returns (UserIDResponse);
+
 }
 
 // 消息结构定义 
@@ -84,4 +101,29 @@ message AddressBookUpdateRequest {
 message GenericResponse {
     bool success = 1;// 是否成功
     string message = 2;// 提示信息
+}
+
+// 用于发送验证码的请求
+message LoginCodeRequest {
+    string phone = 1;//手机号码
+}
+
+// 验证码登录请求
+message LoginByCodeRequest {
+    string phone = 1;//手机号码
+    string code = 2;//验证码
+}
+
+// 恢复用户请求
+message UserRestoreRequest {
+    string user_id = 1; // 用户ID
+}
+
+// 以下部分用于测试jwt拦截器
+// 空消息结构（用于不需要参数的请求）
+message Empty {}
+
+// 用于返回 user_id 的响应结构
+message UserIDResponse {
+    string user_id = 1;
 }

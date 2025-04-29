@@ -2,8 +2,9 @@
 package config
 
 import (
-	"Mairuida/user_service/model"
 	"log"
+
+	"github.com/MrGaoRock666/Mairuida/user_service/model"
 
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
@@ -19,7 +20,7 @@ func InitDB() *gorm.DB {
 	}
 
 	// 自动迁移建表
-	err = db.AutoMigrate(&model.User{})
+	err = db.AutoMigrate(&model.User{}, &model.Address{})
 	if err != nil {
 		log.Fatalf("AutoMigrate failed: %v", err)
 	}
